@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using QuizPrepAi.Data;
 using QuizPrepAi.Helpers;
+using QuizPrepAi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<QPUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+var scope = app.Services.CreateScope();
+// get the database update with the latest migrations
+await DataHelper.ManageDataAsync(scope.ServiceProvider);
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
