@@ -11,7 +11,11 @@
         @for (var i = 0; i < Model.Questions.Count; i++)
         {
             var question = Model.Questions[i];
-            <div class="quiz-question mb-4" id="question-@i" @if (i != 0) { style="display:none;" }>
+            <div class="quiz-question mb-4" id="question-@i" 
+            @if (i != 0)
+            { 
+                style="display:none;"
+            }>
                 <h2>@question.Prompt</h2>
                 <div class="quiz-answers">
                     @for (var j = 0; j < question.Answers.Count; j++)
