@@ -1,0 +1,32 @@
+﻿@model QuizModel
+
+@{
+    ViewData["Title"] = "Quiz";
+}
+
+<div class="container">
+    <h1 class="mb-4">Quiz</h1>
+
+    <form method="post" id="quiz-form">
+        @for (var i = 0; i < Model.Questions.Count; i++)
+        {
+            var question = Model.Questions[i];
+            <div class="quiz-question mb-4" id="question-@i" @if (i != 0) { style="display:none;" }>
+                <h2>@question.Prompt</h2>
+                <div class="quiz-answers">
+                    @for (var j = 0; j < question.Answers.Count; j++)
+                    {
+                        var answer = question.Answers[j];
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answer-@i" id="answer-@i-@j" value="@answer">
+                            <label class="form-check-label" for="answer-@i-@j">
+                                @answer
+                            </label>
+                        </div>
+                    }
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        }
+    </form>
+</div>
