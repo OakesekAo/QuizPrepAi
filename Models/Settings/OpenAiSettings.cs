@@ -2,7 +2,7 @@
 {
     public class OpenAiSettings
     {
-        public string BaseUrl { }
+        public string BaseUrl { get; set; }
     }
 
     public class QueryOPtions

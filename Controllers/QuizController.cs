@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QuizPrepAi.Models;
 using QuizPrepAi.Services.Interfaces;
 
 namespace QuizPrepAi.Controllers
@@ -13,86 +14,61 @@ namespace QuizPrepAi.Controllers
             _quizService = quizService;
         }
 
-        // GET: QuizController
-        public ActionResult Index()
+        [HttpGet]
+        public IActionResult Index()
         {
             return View();
         }
 
-        //POST
-        public async Task<IActionResult> Index(string topic)
-        {
-            var quiz = await _quizService.GenerateQuiz(topic);
-            return View(quiz);
-        }
-
-        // GET: QuizController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: QuizController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: QuizController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Index(string topic)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var quiz = _quizService.GenerateQuiz(topic);
+            return View("Quiz", quiz);
         }
 
-        // GET: QuizController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpPost]
+        public IActionResult Quiz(QuizModel quiz)
+        {
+            // Validate the user's answers and calculate the results
+            // ...
+
+            // Redirect to the results page
+            return RedirectToAction("Results");
+        }
+
+        [HttpGet]
+        public IActionResult Results()
         {
             return View();
         }
 
-        // POST: QuizController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+
+
+        [HttpGet]
+        public IActionResult Explanation(int questionId)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            //TODO fix to string
+            string question = questionId.ToString();
+            // Call the service to get the explanation for the given question id
+            var explanation = _quizService.GetExplanation(question);
+            // Return the explanation as JSON
+            return Json(new { explanation });
         }
 
-        // GET: QuizController/Delete/5
-        public ActionResult Delete(int id)
+        [HttpGet]
+        public IActionResult StudyGuide(int questionId)
         {
-            return View();
+            //TODO fix to string
+            string question = questionId.ToString();
+            // Call the service to get the study guide for the given question id
+            var studyGuide = _quizService.GetStudyGuide(question);
+
+            // Return the study guide as JSON
+            return Json(new { studyGuide });
         }
 
-        // POST: QuizController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
+
+
 }

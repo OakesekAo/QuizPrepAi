@@ -22,7 +22,6 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
-Console.WriteLine(builder.Configuration["AppSettings:QuizPrepAiSettings:OpenAiAPIKey"]);
 
 //Custom Services
 builder.Services.AddScoped<IQuizService, QuizService>();

@@ -3,6 +3,8 @@
     public class QuizPrepAiSettings
     {
         public string OpenAiAPIKey { get; set; }
+
+        public DefaultCredentials DefaultCredentials { get; set; }
     }
 
     //Add other general get set here

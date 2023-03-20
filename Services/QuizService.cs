@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace QuizPrepAi.Services
 {
@@ -69,6 +70,35 @@ namespace QuizPrepAi.Services
                 throw new Exception("Failed to generate correct answer");
             }
 
+        }
+        public async Task<string> GetExplanation(string question)
+        {
+            var prompt = $"Provide an explanation for the following question: {question}\nExplanation:";
+            var apiResponse = await GenerateText(prompt);
+            var answers = ExtractAnswers(apiResponse);
+            if (answers.Count > 0)
+            {
+                return answers[0];
+            }
+            else
+            {
+                throw new Exception("Failed to generate correct answer");
+            }
+        }
+
+        public async Task<string> GetStudyGuide(string question)
+        {
+            var prompt = $"Provide a study guide for the following question: {question}\nStudy guide:";
+            var apiResponse = await GenerateText(prompt);
+            var answers = ExtractAnswers(apiResponse);
+            if (answers.Count > 0)
+            {
+                return answers[0];
+            }
+            else
+            {
+                throw new Exception("Failed to generate correct answer");
+            }
         }
 
         private async Task<string> GenerateText(string prompt)
@@ -137,6 +167,8 @@ namespace QuizPrepAi.Services
             }
             return answers;
         }
+
+
 
         public class ChatGptApiResponse
         {
