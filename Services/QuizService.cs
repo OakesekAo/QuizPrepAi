@@ -6,16 +6,18 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
+using QuizPrepAi.Models.Settings;
+using Microsoft.Extensions.Options;
 
 namespace QuizPrepAi.Services
 {
     public class QuizService : IQuizService
     {
-        private readonly string _chatGPTApiKey;
+        private AppSettings _appSettings;
 
-        public QuizService(string chatGPTApiKey)
+        public QuizService(IOptions<AppSettings> appSettings)
         {
-            _chatGPTApiKey = chatGPTApiKey;
+            _appSettings = appSettings.Value;
         }
 
         public async Task<QuizModel> GenerateQuiz(string topic)
@@ -27,6 +29,38 @@ namespace QuizPrepAi.Services
             };
             return quiz;
         }
+        public async Task<ICollection<string>> GetExplanation(string question)
+        {
+            var prompt = $"Provide an explanation for the following question: {question}\nExplanation:";
+            var apiResponse = await GenerateText(prompt);
+            var answers = ExtractAnswers(apiResponse);
+            if (answers.Count > 0)
+            {
+                return new List<string> { answers[0] };
+            }
+            else
+            {
+                throw new Exception("Failed to generate correct answer");
+            }
+        }
+
+        public async Task<ICollection<string>> GetStudyGuide(string question)
+        {
+            var prompt = $"Provide a study guide for the following question: {question}\nStudy guide:";
+            var apiResponse = await GenerateText(prompt);
+            var answers = ExtractAnswers(apiResponse);
+            if (answers.Count > 0)
+            {
+                return new List<string> { answers[0] };
+            }
+            else
+            {
+                throw new Exception("Failed to generate correct answer");
+            }
+        }
+
+
+
 
         private async Task<List<QuestionModel>> GenerateQuestions(string topic)
         {
@@ -71,41 +105,12 @@ namespace QuizPrepAi.Services
             }
 
         }
-        public async Task<string> GetExplanation(string question)
-        {
-            var prompt = $"Provide an explanation for the following question: {question}\nExplanation:";
-            var apiResponse = await GenerateText(prompt);
-            var answers = ExtractAnswers(apiResponse);
-            if (answers.Count > 0)
-            {
-                return answers[0];
-            }
-            else
-            {
-                throw new Exception("Failed to generate correct answer");
-            }
-        }
-
-        public async Task<string> GetStudyGuide(string question)
-        {
-            var prompt = $"Provide a study guide for the following question: {question}\nStudy guide:";
-            var apiResponse = await GenerateText(prompt);
-            var answers = ExtractAnswers(apiResponse);
-            if (answers.Count > 0)
-            {
-                return answers[0];
-            }
-            else
-            {
-                throw new Exception("Failed to generate correct answer");
-            }
-        }
 
         private async Task<string> GenerateText(string prompt)
         {
             using(var client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_chatGPTApiKey}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_appSettings.QuizPrepAiSettings.OpenAiAPIKey}");
 
 
                 var response = await client.PostAsync("https://api.chatgpt.com/v1/generate", new StringContent($"{{\"prompt\": \"{prompt}\"}}"));

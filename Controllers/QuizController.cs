@@ -23,6 +23,7 @@ namespace QuizPrepAi.Controllers
         [HttpPost]
         public IActionResult Index(string topic)
         {
+
             var quiz = _quizService.GenerateQuiz(topic);
             return View("Quiz", quiz);
         }

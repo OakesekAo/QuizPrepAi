@@ -1,16 +1,20 @@
-﻿@model string
+﻿
+   @{
+       ViewData["Title"] = "Quiz Topic Selection";
+    string topic = null;
+}
 
 <h1>Quiz Topic Selection</h1>
 
-<form method="post" action="@Url.Action("Index")">
+<form asp-controller="Quiz" asp-action="Index">
     <div class="form-group">
         <label for="topic">Select a quiz topic:</label>
-        <select id="topic" name="topic" class="form-control">
+        <select asp-for="@topic" name="topic" class="form-control">
             <option value="math">Math</option>
             <option value="science">Science</option>
             <option value="history">History</option>
             <option value="english">English</option>
         </select>
     </div>
-    <button type="submit" class="btn btn-primary">Start Quiz</button>
+    <button type="submit" value="Index" class="btn btn-primary">Start Quiz</button>
 </form>
