@@ -2,22 +2,30 @@
 using QuizPrepAi.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using QuizPrepAi.Models.Settings;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http;
+using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Threading.Tasks;
+using OpenAI_API;
+using OpenAI_API.Completions;
 
 namespace QuizPrepAi.Services
 {
     public class QuizService : IQuizService
     {
         private AppSettings _appSettings;
+        private readonly IHttpClientFactory _httpClient;
 
-        public QuizService(IOptions<AppSettings> appSettings)
+        public QuizService(IOptions<AppSettings> appSettings, IHttpClientFactory httpClient)
         {
             _appSettings = appSettings.Value;
+            _httpClient = httpClient;
         }
 
         public async Task<QuizModel> GenerateQuiz(string topic)
@@ -95,7 +103,7 @@ namespace QuizPrepAi.Services
             var prompt = $"Generate a correct answer for the question: {questionPrompt}.";
             var apiResponse = await GenerateText(prompt);
             var answers = ExtractAnswers(apiResponse);
-            if(answers.Count > 0)
+            if (answers.Count > 0)
             {
                 return answers[0];
             }
@@ -106,26 +114,93 @@ namespace QuizPrepAi.Services
 
         }
 
-        private async Task<string> GenerateText(string prompt)
+        public async Task<string> GenerateText(string prompt)
         {
-            using(var client = new HttpClient())
+            var client = new OpenAIAPI(_appSettings.QuizPrepAiSettings.OpenAiAPIKey);
+
+            var completionsRequest = new CompletionRequest
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_appSettings.QuizPrepAiSettings.OpenAiAPIKey}");
+                Model = _appSettings.OpenAiSettings.ModelId,
+                Prompt = prompt,
+                MaxTokens = _appSettings.OpenAiSettings.MaxTokens,
+                Temperature = _appSettings.OpenAiSettings.Temperature,
+                TopP = _appSettings.OpenAiSettings.TopP
+            };
 
-
-                var response = await client.PostAsync("https://api.chatgpt.com/v1/generate", new StringContent($"{{\"prompt\": \"{prompt}\"}}"));
-
-                if (response.IsSuccessStatusCode)
+            try
+            {
+                var completions = await client.Completions.CreateCompletionAsync(completionsRequest.Prompt,completionsRequest.Model,completionsRequest.MaxTokens,completionsRequest.Temperature,completionsRequest.TopP);
+   
+                var quiz = new QuizModel
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return result;
-                }
-                else
-                {
-                    throw new Exception("Failed to generate text");
-                }
+                    Questions = new List<QuestionModel>
+                    {
+                        new QuestionModel { CorrectAnswer = completions.Completions[0].Text }
+                    }
+                };
+
+                return ;
+                
+
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to generate text", ex);
             }
         }
+
+
+        //public async Task<string> GenerateText(string prompt)
+        //{
+
+
+        //    //Assemble the full request uri string
+        //    var query = $"{_appSettings.OpenAiSettings.BaseUrl}/completions/";
+
+        //    var queryParams = new Dictionary<string, string>()
+        //    {
+        //        {"api_key", _appSettings.QuizPrepAiSettings.OpenAiAPIKey },
+        //        {"prompt", prompt }
+        //    };
+
+        //    var requestUri = QueryHelpers.AddQueryString(query, queryParams);
+
+        //    using var client = _httpClient.CreateClient();
+        //    var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        //    var response = await client.SendAsync(request);
+
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        var result = await response.Content.ReadAsStringAsync();
+        //        return result;
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("Failed to generate text");
+        //    }
+        //}
+
+
+        //private async Task<string> GenerateText2(string prompt)
+        //{
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_appSettings.QuizPrepAiSettings.OpenAiAPIKey}");
+        //        client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "POST");
+
+
+        //        var response = await client.PostAsync("https://api.chatgpt.com/v1/generate", new StringContent($"{{\"prompt\": \"{prompt}\"}}"));
+
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var result = await response.Content.ReadAsStringAsync();
+        //            return result;
+        //        }
+        //        else
+        //        {
+        //            throw new Exception("Failed to generate text");
+        //        }
+        //    }
+        //}
 
         private List<string> ExtractQuestionPrompts(string apiResponse)
         {

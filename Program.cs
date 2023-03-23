@@ -26,6 +26,8 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 //Custom Services
 builder.Services.AddScoped<IQuizService, QuizService>();
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 var scope = app.Services.CreateScope();
 // get the database update with the latest migrations
