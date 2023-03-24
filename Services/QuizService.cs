@@ -129,17 +129,20 @@ namespace QuizPrepAi.Services
 
             try
             {
-                var completions = await client.Completions.CreateCompletionAsync(completionsRequest.Prompt,completionsRequest.Model,completionsRequest.MaxTokens,completionsRequest.Temperature,completionsRequest.TopP);
+                var completions = await client.Completions.CreateCompletionAsync(completionsRequest.Prompt,completionsRequest.Model);
    
-                var quiz = new QuizModel
-                {
-                    Questions = new List<QuestionModel>
-                    {
-                        new QuestionModel { CorrectAnswer = completions.Completions[0].Text }
-                    }
-                };
+                // var quiz = new QuizModel
+                // {
+                //     Questions = new List<QuestionModel>
+                //     {
+                //         new QuestionModel { CorrectAnswer = completions.Completions[0].Text }
+                //     }
+                // };
+                
 
-                return ;
+                //not enough reponses for quiz...?
+                return completions.Completions[0].ToString();
+            }
                 
 
             catch (Exception ex)
@@ -204,6 +207,7 @@ namespace QuizPrepAi.Services
 
         private List<string> ExtractQuestionPrompts(string apiResponse)
         {
+            //need to check string format and find out what to use to strip it
             var responseJson = JsonConvert.DeserializeObject<ChatGptApiResponse>(apiResponse);
             var questionPrompts = new List<string>();
             foreach (var completion in responseJson.Completions)
