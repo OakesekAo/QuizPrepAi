@@ -1,0 +1,26 @@
+﻿@model MyViewModel
+
+@using (Html.BeginForm("GenerateQuestions", "Temp2", FormMethod.Post))
+{
+    @Html.TextAreaFor(m => m.Prompt, new { rows = "5", cols = "50" })
+    <button type="submit">Generate Questions</button>
+}
+
+@if (Model.Questions != null)
+{
+    <h2>Generated Questions:</h2>
+    <ul>
+        @foreach (var question in Model.Questions)
+        {
+            <li>@question.Text</li>
+            <ul>
+                <li>@question.CorrectAnswer</li>
+                @foreach (var incorrectAnswer in question.IncorrectAnswers)
+                {
+                    <li>@incorrectAnswer</li>
+                }
+            </ul>
+            <p>@question.Explanation</p>
+        }
+    </ul>
+}

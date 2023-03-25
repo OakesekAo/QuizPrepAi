@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using AspNetCore.Unobtrusive.Ajax;
+using FormHelper;
 using Microsoft.EntityFrameworkCore;
 using QuizPrepAi.Data;
 using QuizPrepAi.Helpers;
@@ -10,6 +12,10 @@ using QuizPrepAi.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddFormHelper();
+builder.Services.AddSignalR();
+
 var connectionString = ConnectionHelper.GetConnectionString(builder.Configuration);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
