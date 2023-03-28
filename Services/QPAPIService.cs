@@ -22,8 +22,8 @@ namespace QuizPrepAi.Services
             var apiKey = _appSettings.QuizPrepAiSettings.OpenAiAPIKey;
             var apiModel = _appSettings.OpenAiSettings.ModelId;
 
-            List<string> resultList = new List<string>();
-            string returnString = "";
+            List<string> rq = new List<string>();
+            string rs = "";
             OpenAIAPI api = new OpenAIAPI(new APIAuthentication(apiKey));
             var completionRequest = new OpenAI_API.Completions.CompletionRequest()
             {
@@ -40,10 +40,10 @@ namespace QuizPrepAi.Services
             var result = await api.Completions.CreateCompletionsAsync(completionRequest, 1);
             foreach (var choice in result.Completions)
             {
-                returnString = choice.Text;
-                resultList.Add(choice.Text);
+                rs = choice.Text;
+                rq.Add(choice.Text);
             }
-            return resultList;
+            return rq;
         }
     }
 }

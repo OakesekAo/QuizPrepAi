@@ -1,7 +1,9 @@
-﻿namespace QuizPrepAi.Services.Interfaces
+﻿using QuizPrepAi.Models;
+
+namespace QuizPrepAi.Services.Interfaces
 {
     public interface IQPAPIService
     {
-        public Task<List<string>> GenerateContent(AIGenerateRequestModel generateRequestModel)
+        public Task<List<string>> GenerateContent(QPRequestModel generateRequestModel);
     }
 }

@@ -39,11 +39,11 @@ namespace QuizPrepAi.Services
         public async Task<QuizModel> GenerateQuiz(string topic)
         {
             var questions = await GenerateQuestions(topic);
-            var quiz = new QuizModel
-            {
-                Questions = questions
-            };
-            return quiz;
+            //var quiz = new QuizModel
+            //{
+            //    Questions = questions
+            //};
+            return questions;
         }
         public async Task<ICollection<string>> GetExplanation(string question)
         {
@@ -78,7 +78,7 @@ namespace QuizPrepAi.Services
 
 
 
-        private async Task<QuestionModel> GenerateQuestions(string topic)
+        private async Task<QPResponseModel> GenerateQuestions(string topic)
         {
             var prompt = new QPRequestModel
             {
