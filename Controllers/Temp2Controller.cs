@@ -57,24 +57,24 @@ public class Temp2Controller : Controller
 
         var questions = new List<Question>();
 
-        foreach (var choice in jsonResponse)
-        {
-            var parts = choice.Text.TrimStart('\n');
-            var questionText = parts[2];
-            var correctAnswer = parts[3];
-            var incorrectAnswers = parts.Skip(3).Take(4).ToList();
-            var explanation = parts.Skip(7).FirstOrDefault() ?? "";
+        //foreach (var choice in jsonResponse)
+        //{
+        //    var parts = choice.Text.TrimStart('\n');
+        //    var questionText = parts[2];
+        //    var correctAnswer = parts[3];
+        //    var incorrectAnswers = parts.Skip(3).Take(4).ToList();
+        //    var explanation = parts.Skip(7).FirstOrDefault() ?? "";
 
-            var question = new Question
-            {
-                Text = questionText.TrimEnd('?'),
-                CorrectAnswer = correctAnswer,
-                IncorrectAnswers = incorrectAnswers,
-                Explanation = explanation
-            };
+        //    var question = new Question
+        //    {
+        //        Text = questionText.TrimEnd('?'),
+        //        CorrectAnswer = correctAnswer,
+        //        IncorrectAnswers = incorrectAnswers,
+        //        Explanation = explanation
+        //    };
 
-            questions.Add(question);
-        }
+        //    questions.Add(question);
+        //}
 
         model.Questions = questions;
 

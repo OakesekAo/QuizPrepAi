@@ -1,35 +1,27 @@
-﻿@model QuizModel
-
-
-@*this isnt the corrct model, but okay for now*@
-
-@{
-    ViewData["Title"] = "Quiz";
+﻿@{
+    ViewData["Title"] = "Quiz Page";
 }
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<div class="text-center">
 
-<div class="container">
-    <h1 class="mb-4">Quiz</h1>
-
-    <form method="post" id="quiz-form">
-        @for (var i = 0; i < Model.Questions.Count; i++)
-        {
-            var question = Model.Questions[i];
-            <div class="quiz-question mb-4" id="question-@i" >
-                <h2>@question.Prompt</h2>
-                <div class="quiz-answers">
-                    @for (var j = 0; j < question.Answers.Count; j++)
-                    {
-                        var answer = question.Answers[j];
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer-@i" id="answer-@i-@j" value="@answer">
-                            <label class="form-check-label" for="answer-@i-@j">
-                                @answer
-                            </label>
-                        </div>
-                    }
+    <form asp-controller="Home" asp-action="Index" method="post">
+        <div class="panel panel-default">
+            <div class="panel-body">ChatGPT Completions In ASP.NET Core Web API</div>
+            <div class="panel-body">
+                <div class="col-sm-9">
+                    <input type="text" name="quiText" value="@ViewBag.Text" class="form-control" autocomplete="off" />
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <div class="col-sm-3" style="margin-left: -70px;">
+                    <input type="submit" class="btn btn-primary" value="Search Answer" />
+                </div>
+                @if (ViewBag.Answer != null)
+                {
+                    <div class="col-sm-12 mt-5">
+                        @Html.Raw(ViewBag.Answer)
+                    </div>
+                }
+
             </div>
-        }
+        </div>
     </form>
 </div>

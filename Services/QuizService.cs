@@ -38,13 +38,42 @@ namespace QuizPrepAi.Services
 
         public async Task<QuizModel> GenerateQuiz(string topic)
         {
-            var questions = await GenerateQuestions(topic);
-            //var quiz = new QuizModel
-            //{
-            //    Questions = questions
-            //};
+            var questions = new QuizModel();
+            questions.Questions = (await GenerateQuestions(topic)).ToString();
+            //todo generate answers, inccorect answers, shuffle, return complete quiz
+            
             return questions;
         }
+
+        private async Task<QPResponseModel> GenerateQuestions(string topic)
+        {
+            var prompt = new QPRequestModel
+            {
+                Prompt = $"Generate a questions on the topic of {topic}"
+            };
+
+            var apiResponse = await _QPapiService.GenerateContent(prompt.Prompt);
+
+            if (apiResponse is not null)
+            {
+                return new QPResponseModel
+                {
+                    Success = false,
+                    Content = null
+                };
+            }
+
+            return new QPResponseModel
+            {
+                Success = true,
+                Content = apiResponse
+            };
+
+        }
+
+
+
+
         public async Task<ICollection<string>> GetExplanation(string question)
         {
             var prompt = $"Provide an explanation for the following question: {question}\nExplanation:";
@@ -78,51 +107,6 @@ namespace QuizPrepAi.Services
 
 
 
-        private async Task<QPResponseModel> GenerateQuestions(string topic)
-        {
-            var prompt = new QPRequestModel
-            {
-                Prompt = $"Generate a questions on the topic of {topic}"
-            };
-
-            var apiResponse = await _QPapiService.GenerateContent(prompt);
-
-            if (apiResponse.Count == 0)
-            {
-                return new QPResponseModel
-                {
-                    Success = false,
-                    Content = null
-                };
-            }
-
-            return new QPResponseModel
-            {
-                Success = true,
-                Content = apiResponse
-            };
-
-
-
-
-
-
-            //var questionPrompts = ExtractQuestionPrompts(apiResponse);
-            //var questions = new List<QuestionModel>();
-            //foreach (var questionPrompt in questionPrompts)
-            //{
-            //    var incorrectAnswers = await GenerateIncorrectAnswers(questionPrompt);
-            //    var correctAnswer = await GenerateCorrectAnswer(questionPrompt);
-            //    var question = new QuestionModel
-            //    {
-            //        Prompt = questionPrompt,
-            //        Answers = ShuffleAnswers(new List<string> { correctAnswer }.Concat(incorrectAnswers).ToList()),
-            //        CorrectAnswer = correctAnswer
-            //    };
-            //    questions.Add(question);
-            //}
-            //return questions;
-        }
 
         private async Task<List<string>> GenerateIncorrectAnswers(string questionPrompt)
         {

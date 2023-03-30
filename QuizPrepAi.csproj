@@ -8,6 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Temp2\**" />
+    <Content Remove="Views\Temp2\**" />
+    <EmbeddedResource Remove="Views\Temp2\**" />
+    <None Remove="Views\Temp2\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Temp2Controller.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Views\Quiz\Results.cshtml" />
   </ItemGroup>
 

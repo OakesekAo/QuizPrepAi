@@ -31,6 +31,7 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 
 //Custom Services
 builder.Services.AddScoped<IQuizService, QuizService>();
+builder.Services.AddScoped<IQPAPIService, QPAPIService>();
 
 builder.Services.AddHttpClient();
 

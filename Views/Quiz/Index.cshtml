@@ -1,20 +1,27 @@
-﻿
-   @{
-       ViewData["Title"] = "Quiz Topic Selection";
-    string topic = null;
+﻿@{
+    ViewData["Title"] = "Quiz Page";
 }
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<div class="text-center">
 
-<h1>Quiz Topic Selection</h1>
+    <form asp-controller="Quiz" asp-action="Index" method="post">
+        <div class="panel panel-default">
+            <div class="panel-body">ChatGPT Completions In ASP.NET Core Web API</div>
+            <div class="panel-body">
+                <div class="col-sm-9">
+                    <input type="text" name="quizText" value="@ViewBag.Text" class="form-control" autocomplete="off" />
+                </div>
+                <div class="col-sm-3" style="margin-left: -70px;">
+                    <input type="submit" class="btn btn-primary" value="Search Answer" />
+                </div>
+                @if (ViewBag.Answer != null)
+                {
+                    <div class="col-sm-12 mt-5">
+                        @Html.Raw(ViewBag.Answer)
+                    </div>
+                }
 
-<form asp-controller="Quiz" asp-action="Index">
-    <div class="form-group">
-        <label for="topic">Select a quiz topic:</label>
-        <select asp-for="@topic" name="topic" class="form-control">
-            <option value="math">SAT Test</option>
-            <option value="science">LSAT</option>
-            <option value="history">MCAT</option>
-            <option value="english">BAR</option>
-        </select>
-    </div>
-    <button type="submit" value="Index" class="btn btn-primary">Start Quiz</button>
-</form>
+            </div>
+        </div>
+    </form>
+</div>
