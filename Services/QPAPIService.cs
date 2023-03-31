@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OpenAI_API;
+using OpenAI_API.Chat;
 using OpenAI_API.Completions;
+using OpenAI_API.Models;
 using QuizPrepAi.Models;
 using QuizPrepAi.Models.Settings;
 using QuizPrepAi.Services.Interfaces;
@@ -20,19 +23,26 @@ namespace QuizPrepAi.Services
 
         public async Task<string> GenerateContent(string query)
         {
+
+
+
+
+
+
             //init result
             string outputResult = "";
             var apiKey = _appSettings.QuizPrepAiSettings.OpenAiAPIKey;
-            var apiModel = _appSettings.OpenAiSettings.ModelId;
+
+
 
 
             OpenAIAPI api = new OpenAIAPI(new APIAuthentication(apiKey));
+            //var result = await api.Completions.CreateCompletionAsync("One Two Three One Two", temperature: 0.1);
 
             CompletionRequest completionRequest = new CompletionRequest()
             {
                 user = "user",
                 Prompt = query,
-                Model = apiModel,
                 Temperature = 0.5,
                 MaxTokens = 300,
                 TopP = 1.0,
@@ -43,7 +53,7 @@ namespace QuizPrepAi.Services
             };
 
 
-            var completions = await api.Completions.CreateCompletionsAsync(completionRequest, 1);
+            var completions = await api.Completions.CreateCompletionAsync(completionRequest);
             foreach (var completion in completions.Completions)
             {
                 outputResult += completion.Text;

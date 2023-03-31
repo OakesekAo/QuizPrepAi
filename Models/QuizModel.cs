@@ -2,6 +2,6 @@
 {
     public class QuizModel
     {
-        public string Questions { get; set; }  
+        public List<QuestionModel> Questions { get; set; }  
     }
 }

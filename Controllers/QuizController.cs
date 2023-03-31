@@ -8,12 +8,10 @@ namespace QuizPrepAi.Controllers
     public class QuizController : Controller
     {
         private readonly IQuizService _quizService;
-        private readonly IQPAPIService _openaiService;
 
-        public QuizController(IQuizService quizService, IQPAPIService openaiService)
+        public QuizController(IQuizService quizService)
         {
             _quizService = quizService;
-            _openaiService = openaiService;
         }
 
         [HttpGet]
@@ -23,13 +21,16 @@ namespace QuizPrepAi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(string quizText)
+        public async Task<IActionResult> Index(string topic)
         {
 
-            var quiz = _openaiService.GenerateContent(quizText);
-            ViewBag.Answer = quiz;
-            ViewBag.Text = quizText;
-            return View();
+            var quiz = await _quizService.GenerateQuiz(topic);
+            return View(quiz);
+
+            //var quiz = _quizService.GenerateQuiz(quizText);
+            //ViewBag.Answer = quiz;
+            //ViewBag.Text = quizText;
+            //return View();
         }
 
         [HttpPost]

@@ -38,38 +38,36 @@ namespace QuizPrepAi.Services
 
         public async Task<QuizModel> GenerateQuiz(string topic)
         {
-            var questions = new QuizModel();
-            questions.Questions = (await GenerateQuestions(topic)).ToString();
-            //todo generate answers, inccorect answers, shuffle, return complete quiz
-            
+            var questions = await GenerateQuestions(topic);
+            var quiz = new QuizModel
+            {
+                Questions = questions
+            };
+            return quiz;
+        }
+
+
+        private async Task<List<QuestionModel>> GenerateQuestions(string topic)
+        {
+            var prompt = $"Generate {20} multiple-choice questions on the topic of {topic}";
+            var apiResponse = await _QPapiService.GenerateContent(prompt);
+            var questionPrompts = ExtractQuestionPrompts(apiResponse);
+            var questions = new List<QuestionModel>();
+            foreach (var questionPrompt in questionPrompts)
+            {
+                var incorrectAnswers = await GenerateIncorrectAnswers(questionPrompt);
+                var correctAnswer = await GenerateCorrectAnswer(questionPrompt);
+                var question = new QuestionModel
+                {
+                    Prompt = questionPrompt,
+                    Answers = ShuffleAnswers(new List<string> { correctAnswer }.Concat(incorrectAnswers).ToList()),
+                    CorrectAnswer = correctAnswer
+                };
+                questions.Add(question);
+            }
             return questions;
         }
 
-        private async Task<QPResponseModel> GenerateQuestions(string topic)
-        {
-            var prompt = new QPRequestModel
-            {
-                Prompt = $"Generate a questions on the topic of {topic}"
-            };
-
-            var apiResponse = await _QPapiService.GenerateContent(prompt.Prompt);
-
-            if (apiResponse is not null)
-            {
-                return new QPResponseModel
-                {
-                    Success = false,
-                    Content = null
-                };
-            }
-
-            return new QPResponseModel
-            {
-                Success = true,
-                Content = apiResponse
-            };
-
-        }
 
 
 
@@ -77,7 +75,7 @@ namespace QuizPrepAi.Services
         public async Task<ICollection<string>> GetExplanation(string question)
         {
             var prompt = $"Provide an explanation for the following question: {question}\nExplanation:";
-            var apiResponse = await GenerateText(prompt);
+            var apiResponse = await _QPapiService.GenerateContent(prompt);
             var answers = ExtractAnswers(apiResponse);
             if (answers.Count > 0)
             {
@@ -92,7 +90,7 @@ namespace QuizPrepAi.Services
         public async Task<ICollection<string>> GetStudyGuide(string question)
         {
             var prompt = $"Provide a study guide for the following question: {question}\nStudy guide:";
-            var apiResponse = await GenerateText(prompt);
+            var apiResponse = await _QPapiService.GenerateContent(prompt);
             var answers = ExtractAnswers(apiResponse);
             if (answers.Count > 0)
             {
@@ -111,14 +109,14 @@ namespace QuizPrepAi.Services
         private async Task<List<string>> GenerateIncorrectAnswers(string questionPrompt)
         {
             var prompt = $"Generate {3} incorrect answers for the question: {questionPrompt}.";
-            var apiResponse = await GenerateText(prompt);
+            var apiResponse = await _QPapiService.GenerateContent(prompt);
             return ExtractAnswers(apiResponse);
         }
 
         private async Task<string> GenerateCorrectAnswer(string questionPrompt)
         {
             var prompt = $"Generate a correct answer for the question: {questionPrompt}.";
-            var apiResponse = await GenerateText(prompt);
+            var apiResponse = await _QPapiService.GenerateContent(prompt);
             var answers = ExtractAnswers(apiResponse);
             if (answers.Count > 0)
             {
@@ -131,45 +129,45 @@ namespace QuizPrepAi.Services
 
         }
 
-        public async Task<string> GenerateText(string prompt)
-        {
-            var messages = new List<Message>
-    {
-        new Message {Role = "user", Content = prompt}
-    };
+        //public async Task<string> GenerateText(string prompt)
+        //{
+        //    var messages = new List<Message>
+        //        {
+        //            new Message {Role = "user", Content = prompt}
+        //        };
 
-            var client = new OpenAIAPI(_appSettings.QuizPrepAiSettings.OpenAiAPIKey);
+        //    var client = new OpenAIAPI(_appSettings.QuizPrepAiSettings.OpenAiAPIKey);
 
-            var requestData = new Request
-            {
-                ModelId = "text-ada-001",
-                Messages = messages
-            };
+        //    var requestData = new Request
+        //    {
+        //        ModelId = "text-ada-001",
+        //        Messages = messages
+        //    };
 
-            try
-            {
-                var response = await client.Completions.CreateCompletionAsync(
-                    new CompletionRequest(requestData.Messages.ToString(), requestData.ModelId));
+        //    try
+        //    {
+        //        var response = await client.Completions.CreateCompletionAsync(
+        //            new CompletionRequest(requestData.Messages.ToString(), requestData.ModelId));
 
-                //var responseData = await response.Completions.;
+        //        //var responseData = await response.Completions.;
 
-                if (response?.Completions?.Count > 0)
-                {
-                    var choice = response.Completions[0];
-                    return choice.Text;
-                }
+        //        if (response?.Completions?.Count > 0)
+        //        {
+        //            var choice = response.Completions[0];
+        //            return choice.Text;
+        //        }
 
-                // No response from the API
-                // ErrorMessage("No response was returned by the API");
-            }
-            catch (Exception ex)
-            {
-                // Handle errors or exceptions
-                // ErrorMessage(ex.Message);
-            }
+        //        // No response from the API
+        //        // ErrorMessage("No response was returned by the API");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle errors or exceptions
+        //        // ErrorMessage(ex.Message);
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
 
         //public async Task<string> GenerateText(string prompt)
