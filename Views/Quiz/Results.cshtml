@@ -8,27 +8,27 @@
 
 @foreach (var question in Model.Questions)
 {
-        <div class="question">
-            <h4>@question.Text</h4>
-            <ul class="answers">
+    <div class="question">
+        <h4>@question.Question</h4>
+        <ul class="answers">
             @foreach (var answer in question.Answers)
             {
-                        <li>@answer.Text</li>
+                <li>@answer</li>
             }
-            </ul>
-            <p>Your answer: @question.UserAnswer</p>
-            <p>Correct answer: @question.CorrectAnswer</p>
+        </ul>
+        <p>Your answer: @question.UserAnswer</p>
+        <p>Correct answer: @question.CorrectAnswer</p>
+    </div>
+    if (question.UserAnswer != question.CorrectAnswer)
+    {
+        <div class="explanation">
+            <h4>Explanation</h4>
+            <p>question.Explanation</p>
         </div>
+        <div class="study-guide">
+            <h4>Study Guide</h4>
+            <p>question.StudyGuide</p>
+        </div>
+    }
 }
 
-<h3>Explanation</h3>
-
-<p>Explanation for incorrect questions:</p>
-
-<div id="explanation"></div>
-
-<h3>Study Guide</h3>
-
-<p>Study guide for incorrect questions:</p>
-
-<div id="study-guide"></div>

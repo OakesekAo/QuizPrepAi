@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Quiz\Results.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Views\Temp\Index.cshtml.css" />
   </ItemGroup>
 

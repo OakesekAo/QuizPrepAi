@@ -38,34 +38,43 @@ namespace QuizPrepAi.Services
 
         public async Task<QuizModel> GenerateQuiz(string topic)
         {
-            var questions = await GenerateQuestions(topic);
-            var quiz = new QuizModel
+            QuizModel quiz = new QuizModel(); // Initialize the QuizModel object
+
+            var questionBlob = await GenerateQuestions(topic);
+            List<string> questionPrompts = ExtractQuestionPrompts(questionBlob);
+
+            foreach (string prompt in questionPrompts)
             {
-                Questions = questions
-            };
+                // Create a new QuestionModel object for each question
+                QuestionModel question = new QuestionModel();
+
+                // Set the question prompt
+                question.Question = prompt;
+
+                // Get the correct answer for the question
+                string correctAnswer = await GenerateCorrectAnswer(prompt);
+                question.CorrectAnswer = correctAnswer;
+
+                // Get a list of incorrect answers for the question
+                List<string> incorrectAnswers = await GenerateIncorrectAnswers(prompt);
+                question.Answers = incorrectAnswers;
+                question.Answers.Insert(0, correctAnswer); // Add the correct answer to the list of possible answers
+
+                // Add the question to the quiz
+                quiz.Questions.Add(question);
+            }
+
             return quiz;
         }
 
 
-        private async Task<List<QuestionModel>> GenerateQuestions(string topic)
+
+        private async Task<string> GenerateQuestions(string topic)
         {
-            var prompt = $"Generate {20} multiple-choice questions on the topic of {topic}";
-            var apiResponse = await _QPapiService.GenerateContent(prompt);
-            var questionPrompts = ExtractQuestionPrompts(apiResponse);
-            var questions = new List<QuestionModel>();
-            foreach (var questionPrompt in questionPrompts)
-            {
-                var incorrectAnswers = await GenerateIncorrectAnswers(questionPrompt);
-                var correctAnswer = await GenerateCorrectAnswer(questionPrompt);
-                var question = new QuestionModel
-                {
-                    Prompt = questionPrompt,
-                    Answers = ShuffleAnswers(new List<string> { correctAnswer }.Concat(incorrectAnswers).ToList()),
-                    CorrectAnswer = correctAnswer
-                };
-                questions.Add(question);
-            }
-            return questions;
+            QuestionModel questions = new();
+            var prompt = $"Generate 5 questions on the topic of {topic}";
+            var apiResponse = await _QPapiService.GenerateContent(prompt); 
+            return apiResponse;
         }
 
 
@@ -115,7 +124,7 @@ namespace QuizPrepAi.Services
 
         private async Task<string> GenerateCorrectAnswer(string questionPrompt)
         {
-            var prompt = $"Generate a correct answer for the question: {questionPrompt}.";
+            var prompt = $"Generate one correct answer for the question: {questionPrompt}.";
             var apiResponse = await _QPapiService.GenerateContent(prompt);
             var answers = ExtractAnswers(apiResponse);
             if (answers.Count > 0)
@@ -129,130 +138,37 @@ namespace QuizPrepAi.Services
 
         }
 
-        //public async Task<string> GenerateText(string prompt)
-        //{
-        //    var messages = new List<Message>
-        //        {
-        //            new Message {Role = "user", Content = prompt}
-        //        };
-
-        //    var client = new OpenAIAPI(_appSettings.QuizPrepAiSettings.OpenAiAPIKey);
-
-        //    var requestData = new Request
-        //    {
-        //        ModelId = "text-ada-001",
-        //        Messages = messages
-        //    };
-
-        //    try
-        //    {
-        //        var response = await client.Completions.CreateCompletionAsync(
-        //            new CompletionRequest(requestData.Messages.ToString(), requestData.ModelId));
-
-        //        //var responseData = await response.Completions.;
-
-        //        if (response?.Completions?.Count > 0)
-        //        {
-        //            var choice = response.Completions[0];
-        //            return choice.Text;
-        //        }
-
-        //        // No response from the API
-        //        // ErrorMessage("No response was returned by the API");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle errors or exceptions
-        //        // ErrorMessage(ex.Message);
-        //    }
-
-        //    return null;
-        //}
-
-
-        //public async Task<string> GenerateText(string prompt)
-        //{
-
-
-        //    //Assemble the full request uri string
-        //    var query = $"{_appSettings.OpenAiSettings.BaseUrl}/completions/";
-
-        //    var queryParams = new Dictionary<string, string>()
-        //    {
-        //        {"api_key", _appSettings.QuizPrepAiSettings.OpenAiAPIKey },
-        //        {"prompt", prompt }
-        //    };
-
-        //    var requestUri = QueryHelpers.AddQueryString(query, queryParams);
-
-        //    using var client = _httpClient.CreateClient();
-        //    var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-        //    var response = await client.SendAsync(request);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var result = await response.Content.ReadAsStringAsync();
-        //        return result;
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("Failed to generate text");
-        //    }
-        //}
-
-
-        //private async Task<string> GenerateText2(string prompt)
-        //{
-        //    using (var client = new HttpClient())
-        //    {
-        //        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_appSettings.QuizPrepAiSettings.OpenAiAPIKey}");
-        //        client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "POST");
-
-
-        //        var response = await client.PostAsync("https://api.chatgpt.com/v1/generate", new StringContent($"{{\"prompt\": \"{prompt}\"}}"));
-
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            var result = await response.Content.ReadAsStringAsync();
-        //            return result;
-        //        }
-        //        else
-        //        {
-        //            throw new Exception("Failed to generate text");
-        //        }
-        //    }
-        //}
 
         private List<string> ExtractQuestionPrompts(string apiResponse)
         {
-            //need to check string format and find out what to use to strip it
-            var responseJson = JsonConvert.DeserializeObject<ChatGptApiResponse>(apiResponse);
-            var questionPrompts = new List<string>();
-            foreach (var completion in responseJson.Completions)
+            // Split the response string into an array of strings
+            string[] prompts = apiResponse.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Remove any leading numbers and dots from each question prompt
+            for (int i = 0; i < prompts.Length; i++)
             {
-                var text = completion.Text.Trim();
-                if (text.EndsWith("?"))
-                {
-                    questionPrompts.Add(text);
-                }
+                prompts[i] = prompts[i].Substring(prompts[i].IndexOf('.') + 2);
             }
-            return questionPrompts;
+
+            // Return the list of question prompts
+            return prompts.ToList();
         }
 
         private List<string> ExtractAnswers(string apiResponse)
         {
-            var responseJson = JsonConvert.DeserializeObject<ChatGptApiResponse>(apiResponse);
-            var answers = new List<string>();
-            foreach (var completion in responseJson.Completions)
+            // Split the response string into an array of strings
+            string[] answers = apiResponse.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Remove any leading or trailing whitespace from each answer
+            for (int i = 0; i < answers.Length; i++)
             {
-                var text = completion.Text.Trim();
-                if (!string.IsNullOrEmpty(text))
-                {
-                    answers.Add(text);
-                }
+                answers[i] = answers[i].Trim();
             }
-            return answers;
+
+            // Return the list of answers
+            return answers.ToList();
         }
+        
 
 
         private List<string> ShuffleAnswers(List<string> answers)

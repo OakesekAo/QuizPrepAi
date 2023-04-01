@@ -21,10 +21,10 @@ namespace QuizPrepAi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(string topic)
+        public async Task<IActionResult> Index(string quizText)
         {
 
-            var quiz = await _quizService.GenerateQuiz(topic);
+            var quiz = await _quizService.GenerateQuiz(quizText);
             return View(quiz);
 
             //var quiz = _quizService.GenerateQuiz(quizText);
@@ -37,16 +37,29 @@ namespace QuizPrepAi.Controllers
         public IActionResult Quiz(QuizModel quiz)
         {
             // Validate the user's answers and calculate the results
-            // ...
+            int correctAnswers = 0;
+            for (int i = 0; i < quiz.Questions.Count; i++)
+            {
+                var question = quiz.Questions[i];
+                var userAnswer = Request.Form["answer-" + i];
+                question.UserAnswer = userAnswer;
+
+                if (userAnswer == question.CorrectAnswer)
+                {
+                    correctAnswers++;
+                }
+            }
+
+            quiz.ValidateAnswers();
 
             // Redirect to the results page
-            return RedirectToAction("Results");
+            return RedirectToAction("Results", quiz);
         }
 
         [HttpGet]
-        public IActionResult Results()
+        public IActionResult Results(QuizModel quiz)
         {
-            return View();
+            return View(quiz);
         }
 
 

@@ -12,25 +12,15 @@
             <div class="panel-body">ChatGPT Completions In ASP.NET Core Web API</div>
             <div class="panel-body">
                 <div class="col-sm-9">
-                    <input type="text" name="quizText" asp-for="topic" class="form-control" autocomplete="off" />
+                    <input type="text" name="quizText" value="@ViewBag.Text" class="form-control" autocomplete="off" />
                 </div>
                 <div class="col-sm-3" style="margin-left: -70px;">
                     <input type="submit" class="btn btn-primary" value="Search Answer" />
                 </div>
-                @if (ViewBag.Answer != null)
-                {
-                    <div class="col-sm-12 mt-5">
-                        @Html.Raw(ViewBag.Answer)
-                    </div>
-                }
 
             </div>
         </div>
     </form>
-
-
-
-
 
     <form method="post" id="quiz-form">
 
@@ -39,24 +29,27 @@
         }
 
         @for (var i = 0; i < questions?.Count; i++)
-            {
+        {
             var question = questions?[i];
             <div class="quiz-question mb-4" id="question-@i" @(i != 0 ? "style=display:none;" : "")>
-                        <h2>@question.Prompt</h2>
-                        <div class="quiz-answers">
-                        @for (var j = 0; j < question.Answers.Count; j++)
-                        {
-                            var answer = question.Answers[j];
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="answer-@i" id="answer-@i-@j" value="@answer">
-                                        <label class="form-check-label" for="answer-@i-@j">
-                                    @answer
-                                        </label>
-                                    </div>
-                        }
+                <h2>@question.Question</h2>
+                <div class="quiz-answers">
+                    @for (var j = 0; j < question.Answers.Count; j++)
+                    {
+                        var answer = question.Answers[j];
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answer-@i" id="answer-@i-@j" value="@answer">
+                            <label class="form-check-label" for="answer-@i-@j">
+                                @answer
+                            </label>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-            } 
+                    }
+                </div>
+                <input type="hidden" name="correct-answer-@i" value="@question.CorrectAnswer">
+            </div>
+        }
+
+        <input type="hidden" name="total-questions" value="@Model?.TotalQuestions">
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
