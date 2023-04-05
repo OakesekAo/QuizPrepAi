@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using QuizPrepAi.Models;
 using QuizPrepAi.Services.Interfaces;
 
@@ -20,47 +21,35 @@ namespace QuizPrepAi.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(string quizText)
-        {
+        //[HttpPost]
+        //public async Task<IActionResult> Index(string quizText)
+        //{
 
+        //    return RedirectToAction("Quiz");
+
+        //    //var quiz = _quizService.GenerateQuiz(quizText);
+        //    //ViewBag.Answer = quiz;
+        //    //ViewBag.Text = quizText;
+        //    //return View();
+        //}
+
+        [HttpPost]
+        public async Task<IActionResult> Quiz(string quizText)
+        {
             var quiz = await _quizService.GenerateQuiz(quizText);
-            return View(quiz);
-
-            //var quiz = _quizService.GenerateQuiz(quizText);
-            //ViewBag.Answer = quiz;
-            //ViewBag.Text = quizText;
-            //return View();
-        }
-
-        [HttpPost]
-        public IActionResult Quiz(QuizModel quiz)
-        {
-            // Validate the user's answers and calculate the results
-            int correctAnswers = 0;
-            for (int i = 0; i < quiz.Questions.Count; i++)
-            {
-                var question = quiz.Questions[i];
-                var userAnswer = Request.Form["answer-" + i];
-                question.UserAnswer = userAnswer;
-
-                if (userAnswer == question.CorrectAnswer)
-                {
-                    correctAnswers++;
-                }
-            }
-
-            quiz.ValidateAnswers();
-
-            // Redirect to the results page
-            return RedirectToAction("Results", quiz);
-        }
-
-        [HttpGet]
-        public IActionResult Results(QuizModel quiz)
-        {
+            // Calculate the total number of questions
+            quiz.TotalQuestions = quiz.Questions.Count;
             return View(quiz);
         }
+
+        //[HttpGet]
+        public IActionResult Results(string quizModel, QuizModel quiz)
+        {
+            quiz = JsonConvert.DeserializeObject<QuizModel>(quizModel);
+            quiz.CorrectAnswers = quiz.Questions.Count(q => q.UserAnswer == q.CorrectAnswer);
+            return View(quiz);
+        }
+
 
 
 

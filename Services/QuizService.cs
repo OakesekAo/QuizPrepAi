@@ -40,34 +40,83 @@ namespace QuizPrepAi.Services
         {
             QuizModel quiz = new QuizModel(); // Initialize the QuizModel object
 
-            var questionBlob = await GenerateQuestions(topic);
-            List<string> questionPrompts = ExtractQuestionPrompts(questionBlob);
+            var questionBlob = await GenerateQuizBlob(topic);
 
-            foreach (string prompt in questionPrompts)
-            {
-                // Create a new QuestionModel object for each question
-                QuestionModel question = new QuestionModel();
-
-                // Set the question prompt
-                question.Question = prompt;
-
-                // Get the correct answer for the question
-                string correctAnswer = await GenerateCorrectAnswer(prompt);
-                question.CorrectAnswer = correctAnswer;
-
-                // Get a list of incorrect answers for the question
-                List<string> incorrectAnswers = await GenerateIncorrectAnswers(prompt);
-                question.Answers = incorrectAnswers;
-                question.Answers.Insert(0, correctAnswer); // Add the correct answer to the list of possible answers
-
-                // Add the question to the quiz
-                quiz.Questions.Add(question);
-            }
+            quiz = ParseQuestions(questionBlob);
 
             return quiz;
         }
 
+        public QuizModel ParseQuestions(string questionBlob)
+        {
+            // Initialize the list of questions
+            List<QuestionModel> questions = new List<QuestionModel>();
 
+            // Split the questionBlob into individual questions
+            string[] questionStrings = questionBlob.Split("\n\n");
+
+            foreach (string questionString in questionStrings)
+            {
+                // Skip empty entries
+                if (string.IsNullOrWhiteSpace(questionString)) continue;
+
+                // Extract the question, answer options, and correct answer
+                string[] lines = questionString.Split("\n");
+                string question = lines[0].Substring(3); // Remove "Q1. ", "Q2. ", etc.
+                List<string> answers = new List<string>();
+                string correctAnswer = "";
+                foreach (string line in lines.Skip(1))
+                {
+                    if (line.StartsWith("A. "))
+                    {
+                        correctAnswer = line.Substring(3);
+                        answers.Add(correctAnswer);
+                    }
+                    else if (line.StartsWith("B. ")) answers.Add(line.Substring(3));
+                    else if (line.StartsWith("C. ")) answers.Add(line.Substring(3));
+                    else if (line.StartsWith("D. ")) answers.Add(line.Substring(3));
+                    else if (line.StartsWith("Correct Answer: ")) correctAnswer = line.Substring(17);
+                }
+
+                // Shuffle the answers
+                answers = ShuffleAnswers(answers);
+
+                // Create a new QuestionModel and add it to the list of questions
+                QuestionModel questionModel = new QuestionModel
+                {
+                    Question = question,
+                    Answers = answers,
+                    CorrectAnswer = correctAnswer
+                };
+                questions.Add(questionModel);
+            }
+
+            // Update the total number of questions
+            int totalQuestions = questions.Count;
+
+            // Create a new QuizModel and return it
+            QuizModel quizModel = new QuizModel
+            {
+                //Topic = "",--
+                Questions = questions,
+                TotalQuestions = totalQuestions
+            };
+            return quizModel;
+        }
+
+
+
+
+
+
+
+        private async Task<string> GenerateQuizBlob(string topic)
+        {
+            QuestionModel questions = new();
+            var prompt = $"Generate 5 questions on the topic of {topic} with one correct answer and three incorrect answers in the following format: \n\nQuiz question. \n the first answer. this will be the correct answer. \n second answer, this will be an incorrect answer.\n third answer, this will be an incorrect answer. \n fourth answer, this will be an incorrect answer.\n\n Use that format for all 5 questions";
+            var apiResponse = await _QPapiService.GenerateContent(prompt);
+            return apiResponse;
+        }
 
         private async Task<string> GenerateQuestions(string topic)
         {
