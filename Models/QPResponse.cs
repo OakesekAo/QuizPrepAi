@@ -1,6 +1,6 @@
 ﻿namespace QuizPrepAi.Models
 {
-    public class QPResponseModel
+    public class QPResponse
     {
         public string Content { get; set; }
         public bool Success { get; set; }

@@ -1,5 +1,5 @@
 ﻿@using Newtonsoft.Json;
-@model QuizPrepAi.Models.QuizModel
+@model QuizPrepAi.Models.Quiz
 
 @{
     ViewData["Title"] = "Quiz Page";
@@ -10,13 +10,13 @@
     <form asp-controller="Quiz" asp-action="Results">
         <input type="hidden" name="quizModel" value="@Html.Raw(JsonConvert.SerializeObject(Model))">
         @{
-            var questions = Model?.Questions;
+            var questions = Model?.SingleQuestionId;
         }
-        @for (var i = 0; i < questions?.Count; i++)
+        @for (var i = 0; i < Model.TotalQuestions; i++)
         {
-            var question = questions?[i];
+            var question = Model.SingleQuestionId[i];
             <div class="quiz-question mb-4" id="question-@i" @(i != 0 ? "style=display:none;" : "")>
-                <h2>@question.Question</h2>
+                <h2>@question.SingleQuestion</h2>
                 <div class="quiz-answers">
                     @for (var j = 0; j < question.Answers.Count; j++)
                     {
@@ -29,7 +29,7 @@
                         </div>
                     }
                 </div>
-                <input type="hidden" name="correct-answer-@i" value="@question.CorrectAnswer">
+                @*<input type="hidden" name="correct-answer-@i" value="@question.CorrectAnswer">*@
             </div>
         }
         <input type="hidden" name="total-questions" value="@Model?.TotalQuestions">

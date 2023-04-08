@@ -1,4 +1,4 @@
-﻿@model QuizPrepAi.Models.QuizModel
+﻿@model QuizPrepAi.Models.Quiz
 
 @{
     ViewData["Title"] = "Quiz";
@@ -20,36 +20,5 @@
 
             </div>
         </div>
-    </form>
-
-    <form method="post" id="quiz-form">
-
-        @{
-            var questions = Model?.Questions;
-        }
-
-        @for (var i = 0; i < questions?.Count; i++)
-        {
-            var question = questions?[i];
-            <div class="quiz-question mb-4" id="question-@i" @(i != 0 ? "style=display:none;" : "")>
-                <h2>@question.Question</h2>
-                <div class="quiz-answers">
-                    @for (var j = 0; j < question.Answers.Count; j++)
-                    {
-                        var answer = question.Answers[j];
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer-@i" id="answer-@i-@j" value="@answer">
-                            <label class="form-check-label" for="answer-@i-@j">
-                                @answer
-                            </label>
-                        </div>
-                    }
-                </div>
-                <input type="hidden" name="correct-answer-@i" value="@question.CorrectAnswer">
-            </div>
-        }
-
-        <input type="hidden" name="total-questions" value="@Model?.TotalQuestions">
-        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>

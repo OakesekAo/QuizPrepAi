@@ -36,9 +36,9 @@ namespace QuizPrepAi.Services
             _QPapiService = qPapiService;
         }
 
-        public async Task<QuizModel> GenerateQuiz(string topic)
+        public async Task<Quiz> GenerateQuiz(string topic)
         {
-            QuizModel quiz = new QuizModel(); // Initialize the QuizModel object
+            Quiz quiz = new Quiz(); // Initialize the QuizModel object
 
             var questionBlob = await GenerateQuizBlob(topic);
 
@@ -47,10 +47,10 @@ namespace QuizPrepAi.Services
             return quiz;
         }
 
-        public QuizModel ParseQuestions(string questionBlob)
+        public Quiz ParseQuestions(string questionBlob)
         {
             // Initialize the list of questions
-            List<QuestionModel> questions = new List<QuestionModel>();
+            List<Question> questions = new List<Question>();
 
             // Split the questionBlob into individual questions
             string[] questionStrings = questionBlob.Split("\n\n");
@@ -82,9 +82,9 @@ namespace QuizPrepAi.Services
                 answers = ShuffleAnswers(answers);
 
                 // Create a new QuestionModel and add it to the list of questions
-                QuestionModel questionModel = new QuestionModel
+                Question questionModel = new Question
                 {
-                    Question = question,
+                    SingleQuestion = question,
                     Answers = answers,
                     CorrectAnswer = correctAnswer
                 };
@@ -95,10 +95,10 @@ namespace QuizPrepAi.Services
             int totalQuestions = questions.Count;
 
             // Create a new QuizModel and return it
-            QuizModel quizModel = new QuizModel
+            Quiz quizModel = new Quiz
             {
                 //Topic = "",--
-                Questions = questions,
+                SingleQuestionId = questions,
                 TotalQuestions = totalQuestions
             };
             return quizModel;
@@ -112,7 +112,7 @@ namespace QuizPrepAi.Services
 
         private async Task<string> GenerateQuizBlob(string topic)
         {
-            QuestionModel questions = new();
+            Question questions = new();
             var prompt = $"Generate 5 questions on the topic of {topic} with one correct answer and three incorrect answers in the following format: \n\nQuiz question. \n the first answer. this will be the correct answer. \n second answer, this will be an incorrect answer.\n third answer, this will be an incorrect answer. \n fourth answer, this will be an incorrect answer.\n\n Use that format for all 5 questions";
             var apiResponse = await _QPapiService.GenerateContent(prompt);
             return apiResponse;
@@ -120,7 +120,7 @@ namespace QuizPrepAi.Services
 
         private async Task<string> GenerateQuestions(string topic)
         {
-            QuestionModel questions = new();
+            Question questions = new();
             var prompt = $"Generate 5 questions on the topic of {topic}";
             var apiResponse = await _QPapiService.GenerateContent(prompt); 
             return apiResponse;

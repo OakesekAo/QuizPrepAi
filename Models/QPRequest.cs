@@ -1,6 +1,6 @@
 ﻿namespace QuizPrepAi.Models
 {
-    public class QPRequestModel
+    public class QPRequest
     {
         public string Prompt { get; set; }
     }

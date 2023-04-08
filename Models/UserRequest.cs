@@ -1,6 +1,6 @@
 ﻿namespace QuizPrepAi.Models
 {
-    public class UserRequestModel
+    public class UserRequest
     {
         public string Message { get; set; }
     }

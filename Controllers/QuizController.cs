@@ -37,16 +37,18 @@ namespace QuizPrepAi.Controllers
         public async Task<IActionResult> Quiz(string quizText)
         {
             var quiz = await _quizService.GenerateQuiz(quizText);
-            // Calculate the total number of questions
-            quiz.TotalQuestions = quiz.Questions.Count;
+
+            // TODO See if this still needs to be calculated
+            //quiz.TotalQuestions = quiz.Questions.Count;
             return View(quiz);
         }
 
         //[HttpGet]
-        public IActionResult Results(string quizModel, QuizModel quiz)
+        public IActionResult Results(string quizModel, Quiz quiz)
         {
-            quiz = JsonConvert.DeserializeObject<QuizModel>(quizModel);
-            quiz.CorrectAnswers = quiz.Questions.Count(q => q.UserAnswer == q.CorrectAnswer);
+            quiz = JsonConvert.DeserializeObject<Quiz>(quizModel);
+            //refactor
+            //quiz.CorrectAnswers = quiz.TotalQuestions.Count(q => q.UserAnswer == q.CorrectAnswer);
             return View(quiz);
         }
 

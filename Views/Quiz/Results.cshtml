@@ -1,4 +1,4 @@
-﻿@model QuizPrepAi.Models.QuizModel
+﻿@model QuizPrepAi.Models.Quiz
 
 <h2>Quiz Results</h2>
 
@@ -6,20 +6,20 @@
 
 <h3>Review</h3>
 
-@foreach (var question in Model.Questions)
+@foreach (var question in Model.SingleQuestionId)
 {
     <div class="question">
-        <h4>@question.Question</h4>
+        <h4>@question.SingleQuestion</h4>
         <ul class="answers">
-            @foreach (var answer in question.Answers)
+            @foreach (var answer in Model.AnswerId)
             {
                 <li>@answer</li>
             }
         </ul>
-        <p>Your answer: @question.UserAnswer</p>
+        <p>Your answer: @Model.Answer</p>
         <p>Correct answer: @question.CorrectAnswer</p>
     </div>
-    if (question.UserAnswer != question.CorrectAnswer)
+    if (@Model.Answer.ToString() != question.CorrectAnswer)
     {
         <div class="explanation">
             <h4>Explanation</h4>
