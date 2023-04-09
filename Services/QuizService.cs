@@ -98,7 +98,7 @@ namespace QuizPrepAi.Services
             Quiz quizModel = new Quiz
             {
                 //Topic = "",--
-                SingleQuestionId = questions,
+                Question = questions,
                 TotalQuestions = totalQuestions
             };
             return quizModel;

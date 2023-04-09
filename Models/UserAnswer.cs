@@ -4,8 +4,10 @@
     {
         public int Id { get; set; }
         public string? QPUserId { get; set; }
-        public string Answer { get; set; }
+        public int QuizId { get; set; }
+        public string SelectedAnswer { get; set; }
         //virtuals
-        public virtual QPUser? QPUser { get; set; }
+        public virtual Quiz Quiz { get; set; }
+        public virtual QPUser? User { get; set; }
     }
 }

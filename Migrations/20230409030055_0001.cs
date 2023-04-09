@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -29,6 +30,8 @@ namespace QuizPrepAi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -155,6 +158,81 @@ namespace QuizPrepAi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Quiz",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    QPUserId = table.Column<string>(type: "text", nullable: true),
+                    Topic = table.Column<string>(type: "text", nullable: false),
+                    TotalQuestions = table.Column<int>(type: "integer", nullable: false),
+                    CorrectAnswers = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quiz", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Quiz_AspNetUsers_QPUserId",
+                        column: x => x.QPUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    QPUserId = table.Column<string>(type: "text", nullable: true),
+                    QuizId = table.Column<int>(type: "integer", nullable: false),
+                    SingleQuestion = table.Column<string>(type: "text", nullable: false),
+                    Answers = table.Column<List<string>>(type: "text[]", nullable: false),
+                    CorrectAnswer = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Question_AspNetUsers_QPUserId",
+                        column: x => x.QPUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Question_Quiz_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAnswer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    QPUserId = table.Column<string>(type: "text", nullable: true),
+                    QuizId = table.Column<int>(type: "integer", nullable: false),
+                    SelectedAnswer = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAnswer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAnswer_AspNetUsers_QPUserId",
+                        column: x => x.QPUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserAnswer_Quiz_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -191,6 +269,31 @@ namespace QuizPrepAi.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_QPUserId",
+                table: "Question",
+                column: "QPUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_QuizId",
+                table: "Question",
+                column: "QuizId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quiz_QPUserId",
+                table: "Quiz",
+                column: "QPUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswer_QPUserId",
+                table: "UserAnswer",
+                column: "QPUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswer_QuizId",
+                table: "UserAnswer",
+                column: "QuizId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -211,7 +314,16 @@ namespace QuizPrepAi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Question");
+
+            migrationBuilder.DropTable(
+                name: "UserAnswer");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Quiz");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
