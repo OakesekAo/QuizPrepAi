@@ -1,34 +1,31 @@
-﻿@model QuizPrepAi.Models.Quiz
+﻿@model QuizPrepAi.Models.ViewModels.QuizResultViewModel
 
-<h2>Quiz Results</h2>
-
-<p>You scored @Model.CorrectAnswers out of @Model.TotalQuestions questions.</p>
-
-<h3>Review</h3>
-
-@foreach (var question in Model.Question)
-{
-    <div class="question">
-        <h4>@question.SingleQuestion</h4>
-        <ul class="answers">
-            @foreach (var answer in Model.SelectedAnswer)
-            {
-                <li>@answer</li>
-            }
-        </ul>
-        <p>Your answer: @Model.SelectedAnswer</p>
-        <p>Correct answer: @question.CorrectAnswer</p>
-    </div>
-    if (@Model.SelectedAnswer.ToString() != question.CorrectAnswer)
-    {
-        <div class="explanation">
-            <h4>Explanation</h4>
-            <p>question.Explanation</p>
-        </div>
-        <div class="study-guide">
-            <h4>Study Guide</h4>
-            <p>question.StudyGuide</p>
-        </div>
-    }
+@{
+ViewData["Title"] = "Quiz Results";
 }
+
+<div class="text-center">
+    <h1>Quiz Results</h1>
+    <h2>@Model.QuizTitle</h2>
+    <h3>You scored @Model.Score out of @Model.TotalQuestions</h3>
+    <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Question</th>
+            <th>Correct Answer</th>
+                <th>Your Answer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var answer in Model.UserAnswers)
+            {
+                <tr>
+                    <td>@answer.Question.SingleQuestion</td>
+                    <td>@answer.Question.CorrectAnswer</td>
+                    <td>@answer.SelectedAnswer</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
 

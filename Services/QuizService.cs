@@ -1,5 +1,4 @@
 ﻿using QuizPrepAi.Models;
-using QuizPrepAi.Models.JsonModels;
 using QuizPrepAi.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,22 +17,25 @@ using OpenAI_API.Completions;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using QuizPrepAi.Data;
 
 namespace QuizPrepAi.Services
 {
     public class QuizService : IQuizService
     {
+        private readonly ApplicationDbContext _context;
         private readonly AppSettings _appSettings;
         private readonly IHttpClientFactory _httpClient;
         private readonly IQPAPIService _QPapiService;
 
         private readonly StringBuilder _quizMessage = new();
 
-        public QuizService(IOptions<AppSettings> appSettings, IHttpClientFactory httpClient, IQPAPIService qPapiService)
+        public QuizService(IOptions<AppSettings> appSettings, IHttpClientFactory httpClient, IQPAPIService qPapiService, ApplicationDbContext context)
         {
             _appSettings = appSettings.Value;
             _httpClient = httpClient;
             _QPapiService = qPapiService;
+            _context = context;
         }
 
         public async Task<Quiz> GenerateQuiz(string topic)
@@ -62,21 +64,69 @@ namespace QuizPrepAi.Services
 
                 // Extract the question, answer options, and correct answer
                 string[] lines = questionString.Split("\n");
-                string question = lines[0].Substring(3); // Remove "Q1. ", "Q2. ", etc.
+                //string question = lines[0].Substring(3); // Remove "Q1. ", "Q2. ", etc.
+                string question = lines[0];
+                if (question.Length > 3)
+                {
+                    question = question.Substring(3); // Remove "Q1. ", "Q2. ", etc.
+                }
+                else
+                {
+                    question = ""; // Or whatever default value you prefer
+                }
+
                 List<string> answers = new List<string>();
                 string correctAnswer = "";
+                //foreach (string line in lines.Skip(1))
+                //{
+                //    if (line.StartsWith("A. "))
+                //    {
+                //        correctAnswer = line.Substring(3);
+                //        answers.Add(correctAnswer);
+                //    }
+                //    else if (line.StartsWith("B. ")) answers.Add(line.Substring(3));
+                //    else if (line.StartsWith("C. ")) answers.Add(line.Substring(3));
+                //    else if (line.StartsWith("D. ")) answers.Add(line.Substring(3));
+                //    else if (line.StartsWith("Correct Answer: ")) correctAnswer = line.Substring(17);
+                //}
+
                 foreach (string line in lines.Skip(1))
                 {
-                    if (line.StartsWith("A. "))
+                    for (char answerOption = 'A'; answerOption <= 'D'; answerOption++)
                     {
-                        correctAnswer = line.Substring(3);
-                        answers.Add(correctAnswer);
+                        string answerPrefix = $"{answerOption}. ";
+                        if (line.StartsWith(answerPrefix))
+                        {
+                            string answer = line.Substring(answerPrefix.Length);
+                            if (answer.EndsWith("this will be the correct answer.", StringComparison.OrdinalIgnoreCase) ||
+                                answer.EndsWith("correct", StringComparison.OrdinalIgnoreCase) ||
+                                answer.EndsWith("right", StringComparison.OrdinalIgnoreCase) ||
+                                answer.EndsWith("true", StringComparison.OrdinalIgnoreCase))
+                            {
+                                int startIndex = answer.LastIndexOf('.') + 2;
+                                int length = answer.Length - startIndex;
+                                correctAnswer = answer.Substring(startIndex, length);
+                                answers.Add(correctAnswer);
+                            }
+                            else if (answer.EndsWith("this will be an incorrect answer.", StringComparison.OrdinalIgnoreCase) ||
+                                     answer.EndsWith("wrong", StringComparison.OrdinalIgnoreCase) ||
+                                     answer.EndsWith("incorrect", StringComparison.OrdinalIgnoreCase) ||
+                                     answer.EndsWith("false", StringComparison.OrdinalIgnoreCase))
+                            {
+                                int startIndex = answer.LastIndexOf('.') + 2;
+                                int length = answer.Length - startIndex;
+                                string incorrectAnswer = answer.Substring(startIndex, length);
+                                answers.Add(incorrectAnswer);
+                            }
+                            else
+                            {
+                                answers.Add(answer);
+                            }
+                        }
                     }
-                    else if (line.StartsWith("B. ")) answers.Add(line.Substring(3));
-                    else if (line.StartsWith("C. ")) answers.Add(line.Substring(3));
-                    else if (line.StartsWith("D. ")) answers.Add(line.Substring(3));
-                    else if (line.StartsWith("Correct Answer: ")) correctAnswer = line.Substring(17);
                 }
+
+
 
                 // Shuffle the answers
                 answers = ShuffleAnswers(answers);

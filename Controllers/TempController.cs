@@ -1,5 +1,4 @@
 using QuizPrepAi.Models;
-using QuizPrepAi.Models.JsonModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text;
@@ -46,14 +45,14 @@ namespace QuizPrepAi.Controllers
 			// setup client
 			var client = new OpenAIAPI(apiKey);
 
-			var message = new Message() { Role = "user", Content = userMessage };//Role = "user",
+			//var message = new Message() { Role = "user", Content = userMessage };//Role = "user",
 
 			// setup request
 			var requestData = new CompletionRequest()
 			{
 				Model = "text-davinci-002",
 				MaxTokens = 1000,
-				Prompt = message.Content,
+				//Prompt = message.Content,
 			};
 
 			// send request
@@ -66,10 +65,10 @@ namespace QuizPrepAi.Controllers
 			}
 
 			var completion = response.Completions[0];
-			var responseMessage = new Message() { Role = "ai", Content = completion.Text };
+			//var responseMessage = new Message() { Role = "ai", Content = completion.Text };
 
 			// add response to list
-			_quizMessage.Append(responseMessage.Content.Trim());
+			//_quizMessage.Append(responseMessage.Content.Trim());
 			ViewBag.Message = _quizMessage;
 
 			return View("Index");

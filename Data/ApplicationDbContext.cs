@@ -12,5 +12,6 @@ namespace QuizPrepAi.Data
         }
         public DbSet<QuizPrepAi.Models.Quiz>? Quiz { get; set; }
         public DbSet<QuizPrepAi.Models.Question>? Question { get; set; }
+        public DbSet<QuizPrepAi.Models.UserAnswer>? UserAnswer { get; set; }
     }
 }
