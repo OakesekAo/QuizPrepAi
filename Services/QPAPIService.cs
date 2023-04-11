@@ -31,7 +31,7 @@ namespace QuizPrepAi.Services
 
             //init result
             string outputResult = "";
-            var apiKey = _appSettings.OpenAiAPIKey;
+            var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
 
 
