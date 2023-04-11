@@ -7,10 +7,10 @@ This is an ASP.NET MVC application that utilizes the ChapGPT language model to g
 ## Roadmap
 
 - Generates questions for users based on the topic they select
-- Provides feedback on what areas to focus on based on the user's performance
+- ~~Provides feedback on what areas to focus on based on the user's performance~~
 - Tracks the user's progress and displays their scores
 - Allows users to create custom quizzes
-- Utilizes ChapGPT to provide intelligent and personalized questions
+- Utilizes ChapGPT to provide questions
 
 ## Features
 
@@ -35,7 +35,7 @@ This is an ASP.NET MVC application that utilizes the ChapGPT language model to g
 2. Click the "Start Quiz" button to begin
 3. Answer the questions presented
 4. Review feedback on what areas to focus on based on your performance
-5. Create custom quizzes by selecting specific questions from the database
+~~5. Create custom quizzes by selecting specific questions from the database~~
 
 ## Contributing
 
