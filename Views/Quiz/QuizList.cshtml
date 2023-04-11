@@ -1,0 +1,32 @@
+﻿@model List<Quiz>
+
+<h1>Quiz List</h1>
+
+@if (Model.Any())
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Quiz Topic</th>
+                <th>Total Questions</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var quiz in Model)
+            {
+                <tr>
+                    <td>@quiz.Topic</td>
+                    <td>@quiz.TotalQuestions</td>
+                    <td>
+                        <a href="@Url.Action("LoadQuiz", "Quiz", new { quizId = quiz.Id })">Start Quiz</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No quizzes found.</p>
+}

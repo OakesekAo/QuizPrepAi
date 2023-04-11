@@ -55,7 +55,8 @@ namespace QuizPrepAi.Services
             List<Question> questions = new List<Question>();
 
             // Split the questionBlob into individual questions
-            string[] questionStrings = questionBlob.Split("\n\n");
+            string[] questionStrings = questionBlob.Split(new string[] { "\r\n\n\n", "\n\n" }, StringSplitOptions.None);
+
 
             foreach (string questionString in questionStrings)
             {
@@ -77,55 +78,18 @@ namespace QuizPrepAi.Services
 
                 List<string> answers = new List<string>();
                 string correctAnswer = "";
-                //foreach (string line in lines.Skip(1))
-                //{
-                //    if (line.StartsWith("A. "))
-                //    {
-                //        correctAnswer = line.Substring(3);
-                //        answers.Add(correctAnswer);
-                //    }
-                //    else if (line.StartsWith("B. ")) answers.Add(line.Substring(3));
-                //    else if (line.StartsWith("C. ")) answers.Add(line.Substring(3));
-                //    else if (line.StartsWith("D. ")) answers.Add(line.Substring(3));
-                //    else if (line.StartsWith("Correct Answer: ")) correctAnswer = line.Substring(17);
-                //}
-
                 foreach (string line in lines.Skip(1))
                 {
-                    for (char answerOption = 'A'; answerOption <= 'D'; answerOption++)
+                    if (line.StartsWith("A. "))
                     {
-                        string answerPrefix = $"{answerOption}. ";
-                        if (line.StartsWith(answerPrefix))
-                        {
-                            string answer = line.Substring(answerPrefix.Length);
-                            if (answer.EndsWith("this will be the correct answer.", StringComparison.OrdinalIgnoreCase) ||
-                                answer.EndsWith("correct", StringComparison.OrdinalIgnoreCase) ||
-                                answer.EndsWith("right", StringComparison.OrdinalIgnoreCase) ||
-                                answer.EndsWith("true", StringComparison.OrdinalIgnoreCase))
-                            {
-                                int startIndex = answer.LastIndexOf('.') + 2;
-                                int length = answer.Length - startIndex;
-                                correctAnswer = answer.Substring(startIndex, length);
-                                answers.Add(correctAnswer);
-                            }
-                            else if (answer.EndsWith("this will be an incorrect answer.", StringComparison.OrdinalIgnoreCase) ||
-                                     answer.EndsWith("wrong", StringComparison.OrdinalIgnoreCase) ||
-                                     answer.EndsWith("incorrect", StringComparison.OrdinalIgnoreCase) ||
-                                     answer.EndsWith("false", StringComparison.OrdinalIgnoreCase))
-                            {
-                                int startIndex = answer.LastIndexOf('.') + 2;
-                                int length = answer.Length - startIndex;
-                                string incorrectAnswer = answer.Substring(startIndex, length);
-                                answers.Add(incorrectAnswer);
-                            }
-                            else
-                            {
-                                answers.Add(answer);
-                            }
-                        }
+                        correctAnswer = line.Substring(3);
+                        answers.Add(correctAnswer);
                     }
+                    else if (line.StartsWith("B. ")) answers.Add(line.Substring(3));
+                    else if (line.StartsWith("C. ")) answers.Add(line.Substring(3));
+                    else if (line.StartsWith("D. ")) answers.Add(line.Substring(3));
+                    else if (line.StartsWith("Correct Answer: ")) correctAnswer = line.Substring(17);
                 }
-
 
 
                 // Shuffle the answers
@@ -163,10 +127,42 @@ namespace QuizPrepAi.Services
         private async Task<string> GenerateQuizBlob(string topic)
         {
             Question questions = new();
-            var prompt = $"Generate 5 questions on the topic of {topic} with one correct answer and three incorrect answers in the following format: \n\nQuiz question. \n the first answer. this will be the correct answer. \n second answer, this will be an incorrect answer.\n third answer, this will be an incorrect answer. \n fourth answer, this will be an incorrect answer.\n\n Use that format for all 5 questions";
+            var prompt = $"Generate 3 questions on the topic of {topic} with one correct answer and three incorrect answers in the following format: \n\nQuiz question. \n the first answer. this will be the correct answer(do not include this sentence). \n second answer, this will be an incorrect answer(do not include this sentence).\n third answer, this will be an incorrect answer(do not include this sentence). \n fourth answer, this will be an incorrect answer(do not include this sentence).\n\n Use that format for all 5 questions";
             var apiResponse = await _QPapiService.GenerateContent(prompt);
             return apiResponse;
         }
+
+        //private async Task<string> GenerateQuizBlob(string topic)
+        //{
+        //    var tasks = new List<Task<string>>();
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        tasks.Add(GenerateQuizQuestions(topic));
+        //    }
+
+        //    await Task.WhenAll(tasks);
+
+        //    var quizBlobBuilder = new StringBuilder();
+        //    foreach (var task in tasks)
+        //    {
+        //        var result = task.Result.Replace("\r\n\n\n", "\n\n"); // replace "\r\n\n\n" with "\n\n"
+        //        quizBlobBuilder.AppendLine(result);
+        //    }
+
+        //    return quizBlobBuilder.ToString();
+        //}
+
+        //private async Task<string> GenerateQuizQuestions(string topic)
+        //{
+        //    Question questions = new();
+        //    var prompt = $"Generate one question on the topic of {topic} with one correct answer and three incorrect answers in the following format: \n\nQuiz question. \n the first answer. this will be the correct answer(do not include this sentence). \n second answer, this will be an incorrect answer(do not include this sentence).\n third answer, this will be an incorrect answer(do not include this sentence). \n fourth answer, this will be an incorrect answer(do not include this sentence).\n\n Use that format for all 5 questions";
+        //    var apiResponse = await _QPapiService.GenerateContent(prompt);
+        //    return apiResponse;
+        //}
+
+
+
+
 
         private async Task<string> GenerateQuestions(string topic)
         {

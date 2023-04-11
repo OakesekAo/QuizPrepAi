@@ -112,6 +112,35 @@ namespace QuizPrepAi.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> QuizList()
+        {
+            // retrieve all quizzes from the DB
+            var quizzes = await _context.Quiz.ToListAsync();
+            return View(quizzes);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadQuiz(int quizId)
+        {
+            // retrieve the quiz from the DB
+            var quiz = await _context.Quiz.Include(q => q.Question).FirstOrDefaultAsync(q => q.Id == quizId);
+            // send the first question with possible answers to the view
+            var questionIndex = 0;
+            var question = quiz.Question[questionIndex];
+            var model = new QuizAnswerViewModel
+            {
+                QuizId = quiz.Id,
+                QuestionId = question.Id,
+                Question = question.SingleQuestion,
+                Answers = question.Answers,
+                TotalQuestions = quiz.TotalQuestions,
+                QuestionNumber = questionIndex + 1
+            };
+            return View("Quiz", model);
+        }
+
+
 
 
         [HttpGet]

@@ -43,9 +43,9 @@ namespace QuizPrepAi.Services
             {
                 user = "user",
                 Prompt = query,
-                Temperature = 0.5,
+                Temperature = 0.1,
                 MaxTokens = 2000,
-                TopP = 1.0,
+                TopP = 0.1,
                 FrequencyPenalty = 0.0,
                 PresencePenalty = 0.0,
                 NumChoicesPerPrompt = 1
