@@ -5,6 +5,12 @@
         public string OpenAiAPIKey { get; set; }
         public QuizPrepAiSettings QuizPrepAiSettings { get; set; }
         public OpenAiSettings OpenAiSettings { get; set; }
+
+        // Parameterless constructor required for dependency injection
+        public AppSettings()
+        {
+        }
+
         public AppSettings(IConfiguration configuration)
         {
             // Check if the OpenAI API key environment variable is set
