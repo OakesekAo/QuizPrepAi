@@ -4,26 +4,34 @@
     ViewData["Title"] = "Quiz Page";
 }
 
-<div class="text-center">
+<div class="justify-content-md-center g-5">
     <form asp-controller="Quiz" asp-action="Quiz" method="post">
         <input type="hidden" name="quizId" value="@Model.QuizId" />
         <input type="hidden" name="questionId" value="@Model.QuestionId" />
         <input type="hidden" name="totalQuestions" value="@Model.TotalQuestions" />
-        <div class="quiz-question mb-4">
-            <h2>@Model.Question</h2>
-            <div class="quiz-answers">
+
+
+        <div class="card">
+            <div class="card-header text-center">
+                @Model.Question
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    @*empty title*@
+                </h5>
                 @for (var i = 0; i < Model.Answers.Count; i++)
                 {
                     var answer = Model.Answers[i];
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="selectedAnswer" id="answer-@i" value="@answer" @(Model.SelectedAnswer == answer ? "checked" : "") />
+                    <p class="card-text">
+                        <input class="form-check-input mt-0" type="radio" name="selectedAnswer" id="answer-@i" value="@answer" @(Model.SelectedAnswer == answer ? "checked" : "") />
                         <label class="form-check-label" for="answer-@i">
                             @answer
                         </label>
-                    </div>
+                    </p>
                 }
+                <button type="submit" class="btn btn-primary">Next</button>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Next</button>
     </form>
 </div>
+

@@ -10,23 +10,20 @@
 
 	<ItemGroup>
     <Compile Remove="Views\Temp2\**" />
+    <Compile Remove="Views\Temp\**" />
     <Content Remove="Views\Temp2\**" />
+    <Content Remove="Views\Temp\**" />
     <EmbeddedResource Remove="Views\Temp2\**" />
+    <EmbeddedResource Remove="Views\Temp\**" />
     <None Remove="Views\Temp2\**" />
+    <None Remove="Views\Temp\**" />
   </ItemGroup>
 
 	
 	
   <ItemGroup>
     <Compile Remove="Controllers\Temp2Controller.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Views\Temp\Index.cshtml.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\Temp\Index.cshtml.css" />
+    <Compile Remove="Controllers\TempController.cs" />
   </ItemGroup>
 
   <ItemGroup>

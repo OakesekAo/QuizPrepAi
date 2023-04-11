@@ -1,32 +1,34 @@
 ﻿@model List<Quiz>
 
-<h1>Quiz List</h1>
+<div class="text-center justify-content-md-center">
 
-@if (Model.Any())
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Quiz Topic</th>
-                <th>Total Questions</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var quiz in Model)
-            {
+    <h1>Quiz List</h1>
+    @if (Model.Any())
+    {
+        <table class ="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <td>@quiz.Topic</td>
-                    <td>@quiz.TotalQuestions</td>
-                    <td>
-                        <a href="@Url.Action("LoadQuiz", "Quiz", new { quizId = quiz.Id })">Start Quiz</a>
-                    </td>
+                    <th scope="col">Quiz Topic</th>
+                    <th scope="col">Questions</th>
+                    <th scope="col">Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No quizzes found.</p>
-}
+            </thead>
+            <tbody>
+                @foreach (var quiz in Model)
+                {
+                    <tr>
+                        <td>@quiz.Topic</td>
+                        <td>@quiz.TotalQuestions</td>
+                        <td>
+                            <a href="@Url.Action("LoadQuiz", "Quiz", new { quizId = quiz.Id })">Take Quiz</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No quizzes found.</p>
+    }
+</div>

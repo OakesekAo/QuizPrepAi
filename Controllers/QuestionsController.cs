@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace QuizPrepAi.Controllers
             _context = context;
         }
 
+        [Authorize]
         // GET: Questions
         public async Task<IActionResult> Index()
         {
@@ -26,6 +28,7 @@ namespace QuizPrepAi.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        [Authorize]
         // GET: Questions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -45,6 +48,7 @@ namespace QuizPrepAi.Controllers
             return View(question);
         }
 
+        [Authorize]
         // GET: Questions/Create
         public IActionResult Create()
         {
@@ -52,6 +56,7 @@ namespace QuizPrepAi.Controllers
             return View();
         }
 
+        [Authorize]
         // POST: Questions/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -69,6 +74,7 @@ namespace QuizPrepAi.Controllers
             return View(question);
         }
 
+        [Authorize]
         // GET: Questions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -86,6 +92,7 @@ namespace QuizPrepAi.Controllers
             return View(question);
         }
 
+        [Authorize]
         // POST: Questions/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -122,6 +129,7 @@ namespace QuizPrepAi.Controllers
             return View(question);
         }
 
+        [Authorize]
         // GET: Questions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -141,6 +149,7 @@ namespace QuizPrepAi.Controllers
             return View(question);
         }
 
+        [Authorize]
         // POST: Questions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

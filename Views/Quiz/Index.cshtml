@@ -4,21 +4,24 @@
     ViewData["Title"] = "Quiz";
 }
 
-<div class="container">
-    <h1 class="mb-4">Quiz</h1>
+<div class="text-center">
+    <h1 class="mb-4 p-2">Create a new Quiz</h1>
 
     <form asp-controller="Quiz" asp-action="SetupQuiz" method="post">
-        <div class="panel panel-default">
-            <div class="panel-body">ChatGPT Completions In ASP.NET Core Web API</div>
-            <div class="panel-body">
-                <div class="col-sm-9">
-                    <input type="text" name="quizText" value="@ViewBag.Text" class="form-control" autocomplete="off" />
+        <div class="row justify-content-md-center">
+            <div class="row">
+                <div class="p-3">
+                    Enter a topic for a quiz to generate for you
                 </div>
-                <div class="col-sm-3" style="margin-left: -70px;">
-                    <input type="submit" class="btn btn-primary" value="Search Answer" />
-                </div>
-
             </div>
+            <row>
+                <div class="col-auto p-3">
+                    <input type="text" class="form-control" placeholder="Topic" name="quizText" value="@ViewBag.Text" />
+            </div>
+            <div class="col-md-auto p-3">
+                <input type="submit" class="btn btn-primary mb-2" value="Search Answer" />
+            </div>
+            </row>
         </div>
     </form>
 </div>

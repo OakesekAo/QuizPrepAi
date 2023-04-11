@@ -2,7 +2,38 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center justify-content-md-center">
+    <!-- Basic features section-->
+    <section class="bg-light">
+        <div class="container px-5">
+            <div class="row gx-5 align-items-center justify-content-center justify-content-lg-between">
+                <div class="col-12 col-lg-5">
+                    <h2 class="display-4 lh-1 mb-4">Welcome to QuizPrep AI! </h2>
+                    <p class="lead fw-normal text-muted mb-5 mb-lg-0">
+                        Create and take quizzes on any topic you like, all in one place. With our easy-to-use interface, you can create new quizzes try one from out library and share them with friends or colleagues.
+                    </p>
+                </div>
+                <div class="col-sm-8 col-md-6">
+                    <div class="px-5 px-sm-0"><img class="img-fluid rounded-circle" src="~/assets/img/splash.png" alt="..." /></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Call to action section-->
+    <section class="cta">
+        <div class="cta-content">
+            <div class="container px-5">
+                <h2 class="text-white display-1 lh-1 mb-4">
+                    Stop waiting.
+                    <br />
+                    Start Testing your knowledge.
+                </h2>
+                <a class="btn btn-outline-light py-3 px-4 rounded-pill" asp-area="" asp-controller="Quiz" asp-action="QuizList">Pick a quiz from the library</a>
+            </div>
+        </div>
+    </section>
+
+
+
 </div>
+

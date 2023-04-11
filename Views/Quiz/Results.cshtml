@@ -1,19 +1,19 @@
 ﻿@model QuizPrepAi.Models.ViewModels.QuizResultViewModel
 
 @{
-ViewData["Title"] = "Quiz Results";
+    ViewData["Title"] = "Quiz Results";
 }
 
-<div class="text-center">
-    <h1>Quiz Results</h1>
-    <h2>@Model.QuizTitle</h2>
+<div class="text-center justify-content-md-center">
+    <h1>Quiz Results</h1>@*
+    <h2>@Model.QuizTitle.</h2>*@
     <h3>You scored @Model.Score out of @Model.TotalQuestions</h3>
-    <table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Question</th>
-            <th>Correct Answer</th>
-                <th>Your Answer</th>
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Question</th>
+                <th scope="col">Correct Answer</th>
+                <th scope="col">Your Answer</th>
             </tr>
         </thead>
         <tbody>
@@ -29,3 +29,4 @@ ViewData["Title"] = "Quiz Results";
 
     </table>
 
+</div>
