@@ -14,7 +14,7 @@
         public AppSettings(IConfiguration configuration)
         {
             // Check if the OpenAI API key environment variable is set
-            var openAiApiKey = Environment.GetEnvironmentVariable("OpenAiAPIKey");
+            var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
             if (!string.IsNullOrEmpty(openAiApiKey))
             {
