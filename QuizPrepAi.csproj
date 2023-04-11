@@ -5,10 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-QuizPrepAi-151ba9db-9601-4bb3-bf86-e3f7eba3d326</UserSecretsId>
-		<EnvironmentName>Development</EnvironmentName>
   </PropertyGroup>
 
-  <ItemGroup>
+
+	<ItemGroup>
     <Compile Remove="Views\Temp2\**" />
     <Content Remove="Views\Temp2\**" />
     <EmbeddedResource Remove="Views\Temp2\**" />

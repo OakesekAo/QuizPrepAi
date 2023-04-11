@@ -31,7 +31,7 @@ namespace QuizPrepAi.Services
 
             //init result
             string outputResult = "";
-            var apiKey = _appSettings.QuizPrepAiSettings.OpenAiAPIKey;
+            var apiKey = _appSettings.OpenAiAPIKey;
 
 
 
